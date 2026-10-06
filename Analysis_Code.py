@@ -1,22 +1,4 @@
-#!/usr/bin/env python3
-"""
-extended_analyses.py  --  additional analyses for the infrastructure-benchmark paper.
 
-Run on YOUR panel (one row per point-year):
-    python extended_analyses.py --csv lebanon_panel.csv --out results --trees 300
-
-Edit COLS below so the column names match your file.  Outputs (CSV, in --out):
-    ladder_repeated.csv     P1 / P2 / pixel-grouped / P3(k) accuracy or R2 over repeated fold assignments
-    paired_deltas.csv       pooled out-of-fold Delta (tree - linear) with cluster-bootstrap 95% CI
-    controls.csv            single-year control, static-feature ablation, regularised forest
-    temporal.csv            leave-one-year-out and leave-one-block-and-year-out (irrigation, suitability only)
-    decision_metrics.csv    top-decile precision, severe false-feasible share, top-decile overlap
-    applicability.csv       nearest-training-point distance for every held-out point (P2, P3) + correctness
-    spatial_dependence.csv  Moran's I per target/year, plus semivariogram bins
-    pixel_summary.csv       number of points per coarse pixel
-
-Nothing here is tuned; every setting is fixed and seeds are explicit.
-"""
 import argparse, os, time, warnings
 import numpy as np, pandas as pd
 from sklearn.cluster import KMeans
