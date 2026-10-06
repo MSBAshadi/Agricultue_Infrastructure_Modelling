@@ -19,14 +19,13 @@ COLS = dict(pid="id", year="year", lat="lat", lon="lon", elev="elevation", slope
 
 # Road label (deterministic rule in the paper)
 ROAD_SLOPE_MAX, ROAD_ELEV_MAX = 15.0, 1000.0
-# "Severe" false-feasible: predicted feasible although terrain is far beyond the rule
+
 SEVERE_SLOPE, SEVERE_ELEV = 25.0, 1200.0
 
-# Crop-suitability label (third indicator).  ILLUSTRATIVE VALUES ONLY: replace with the tolerance
-# ranges of your chosen reference crop from a cited source (e.g. FAO EcoCrop) before using results.
+
 SUIT = dict(rain_min=500.0, rain_max=1200.0, lst_min=15.0, lst_max=30.0, slope_max=15.0)
 
-PIXEL_DEG = 0.05        # approx. CHIRPS grid; set to the coarsest source resolution you want to test
+PIXEL_DEG = 0.05        
 K_FOLDS, BLOCKS, SEED = 10, (5, 10, 20), 42
 TOP_FRAC = 0.10
 
@@ -41,13 +40,13 @@ def load(path):
     if miss:
         raise SystemExit(f"Missing columns after renaming: {miss}. Edit COLS.")
     d["road"] = ((d.slope < ROAD_SLOPE_MAX) & (d.elev < ROAD_ELEV_MAX)).astype(int)
-    d["irr"] = d["irrigation_need"]                              # use the paper's own computed target directly
+    d["irr"] = d["irrigation_need"]                             
     d["px"] = (np.floor(d.lat / PIXEL_DEG).astype(int).astype(str) + "_" +
                np.floor(d.lon / PIXEL_DEG).astype(int).astype(str))
     return d.reset_index(drop=True)
 
 
-# Leakage-aware predictor sets (features used to build the label are removed)
+# Leakage-aware predictor sets 
 FEATS = {
     "road": ["dist", "lat", "lon", "ndvi", "evi", "ndwi", "rain", "lst", "sm", "year"],
     "irr":  ["elev", "slope", "dist", "lat", "lon", "ndvi", "evi", "lst", "year"],
@@ -135,7 +134,7 @@ def cluster_boot_delta(task, y, a, b, groups, B=2000, seed=SEED):
     return obs, *np.percentile(boots, [2.5, 97.5])
 
 
-# ------------------------------------------------------------------ analyses
+# ------------------------------------------------------------------ analysis
 def ladder_and_deltas(d, trees, reps, out):
     rows_l, rows_d = [], []
     for task in FEATS:
